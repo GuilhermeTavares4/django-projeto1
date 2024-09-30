@@ -4,7 +4,7 @@ from django.test import TestCase
 class HomeTest(TestCase): 
 
     def setUp(self):
-        response = self.client.get('/')
+        self.response = self.client.get('/')
         
     def test_get(self):
         '''
