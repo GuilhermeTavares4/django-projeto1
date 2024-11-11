@@ -1,6 +1,7 @@
 .eventif
 *.sqlite3
 __pycache__
+*.pyc
 .env
 staticfiles
 .ipynb_checkpoints/

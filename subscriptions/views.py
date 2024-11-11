@@ -5,6 +5,7 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.conf import settings
+from subscriptions.models import Subscription
 
 # Create your views here.
 def subscribe(request):
@@ -29,6 +30,9 @@ def create(request):
         settings.DEFAULT_FROM_EMAIL,
         form.cleaned_data['email']
     )
+
+    Subscription.objects.create(**form.cleaned_data)
+
     #message
     messages.success(request, 'Inscrição realizada com sucesso!')
     return HttpResponseRedirect('/inscricao/')

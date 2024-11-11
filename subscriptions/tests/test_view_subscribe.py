@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core import mail
 from subscriptions.forms import SubscriptionForm
+from subscriptions.models import Subscription
 
 # Create your tests here.
 class SubscribeGet(TestCase):
@@ -30,11 +31,10 @@ class SubscribeGet(TestCase):
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
 
-
 class SubscribePostValid(TestCase):
 
     def setUp(self):
-        data = dict(name='Guilherme', cpf='12345678901', email='guilherme.tavares@aluno.riogrande.ifrs.edu.br', phone='53 12345-1234')
+        data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-1234')
         self.resp = self.client.post('/inscricao/', data)
     
     def test_post(self):
@@ -42,8 +42,12 @@ class SubscribePostValid(TestCase):
         
     def test_send_subscription_email(self):
         self.assertEqual(1, len(mail.outbox))
+
+    def test_save_subscription(self):
+        self.assertTrue(Subscription.objects.exists())
     
 class SubscribePostInvalid(TestCase):
+
     def setUp(self):
         self.resp = self.client.post('/inscricao/', {})
 
@@ -62,8 +66,11 @@ class SubscribePostInvalid(TestCase):
         form = self.resp.context['form']
         self.assertTrue(form.errors)
 
+    def test_dont_save_subscriptions(self):
+        self.assertFalse(Subscription.objects.exists())
+
 class SubscribeSuccessMessage(TestCase):
     def test_message(self):
-       data = dict(name='Guilherme', cpf='12345678901', email='guilherme.tavares@aluno.riogrande.ifrs.edu.br', phone='53 12345-1234')
+       data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-1234')
        resp = self.client.post('/inscricao/', data, follow=True)
        self.assertContains(resp, 'Inscrição realizada com sucesso!')
