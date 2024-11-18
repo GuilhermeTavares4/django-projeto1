@@ -8,7 +8,7 @@ from django.core import mail
 class SubscribePostValid(TestCase):
 
     def setUp(self):
-        data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-1234')
+        data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-6789')
         self.client.post('/inscricao/', data)
         self.email = mail.outbox[0]
     
@@ -31,7 +31,7 @@ class SubscribePostValid(TestCase):
             'Guilherme',
             '12345678901',
             'guideb23@gmail.com',
-            '53 12345-1234'
+            '53 12345-6789'
         )
         for content in contents:
             with self.subTest():

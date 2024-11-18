@@ -3,9 +3,8 @@ from django.core import mail
 from subscriptions.forms import SubscriptionForm
 from subscriptions.models import Subscription
 
-# Create your tests here.
-class SubscribeGet(TestCase):
 
+class SubscribeGet(TestCase):
     def setUp(self):
         self.response = self.client.get('/inscricao/')
 
@@ -13,7 +12,8 @@ class SubscribeGet(TestCase):
         self.assertEqual(200, self.response.status_code)
 
     def test_template(self):
-        self.assertTemplateUsed(self.response, 'subscriptions/subscription_form.html')
+        self.assertTemplateUsed(
+            self.response, 'subscriptions/subscription_form.html')
 
     def test_html(self):
         tags = (
@@ -23,7 +23,6 @@ class SubscribeGet(TestCase):
             ('type="email"', 1),
             ('type="submit"', 1)
         )
-
         for text, count in tags:
             with self.subTest():
                 self.assertContains(self.response, text, count)
@@ -31,32 +30,33 @@ class SubscribeGet(TestCase):
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
 
-class SubscribePostValid(TestCase):
 
+class SubscribePostValid(TestCase):
     def setUp(self):
-        data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-1234')
+        data = dict(name="Cleber Fonseca", cpf='12345678901',
+                    email='profcleberfonseca@gmail.com', phone='53-12345-6789')
         self.resp = self.client.post('/inscricao/', data)
-    
+
     def test_post(self):
-        self.assertEqual(302, self.resp.status_code)
-        
+        self.assertRedirects(self.resp, '/inscricao/1/')
+
     def test_send_subscription_email(self):
         self.assertEqual(1, len(mail.outbox))
 
     def test_save_subscription(self):
         self.assertTrue(Subscription.objects.exists())
-    
-class SubscribePostInvalid(TestCase):
 
+
+class SubscribePostInvalid(TestCase):
     def setUp(self):
         self.resp = self.client.post('/inscricao/', {})
-
 
     def test_post(self):
         self.assertEqual(200, self.resp.status_code)
 
     def test_template(self):
-        self.assertTemplateUsed(self.resp, 'subscriptions/subscription_form.html')
+        self.assertTemplateUsed(
+            self.resp, 'subscriptions/subscription_form.html')
 
     def test_has_form(self):
         form = self.resp.context['form']
@@ -66,11 +66,5 @@ class SubscribePostInvalid(TestCase):
         form = self.resp.context['form']
         self.assertTrue(form.errors)
 
-    def test_dont_save_subscriptions(self):
+    def test_dont_save_subscription(self):
         self.assertFalse(Subscription.objects.exists())
-
-class SubscribeSuccessMessage(TestCase):
-    def test_message(self):
-       data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-1234')
-       resp = self.client.post('/inscricao/', data, follow=True)
-       self.assertContains(resp, 'Inscrição realizada com sucesso!')
