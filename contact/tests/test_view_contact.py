@@ -1,24 +1,24 @@
 from django.test import TestCase
+from contact.forms import ContactForm
 from django.core import mail
-from subscriptions.forms import SubscriptionForm
-from subscriptions.models import Subscription
 
-class SubscribeGet(TestCase):
+class ContactGet(TestCase):
     def setUp(self):
-        self.response = self.client.get('/inscricao/')
+        self.response = self.client.get('/contato/')
 
     def test_get(self):
         self.assertEqual(200, self.response.status_code)
 
     def test_template(self):
         self.assertTemplateUsed(
-            self.response, 'subscriptions/subscription_form.html')
-
+            self.response, 'contact/contact_form.html')
+        
     def test_html(self):
         tags = (
             ('<form', 1),
-            ('<input', 6),
-            ('type="text"', 3),
+            ('<input', 5),
+            ('type="text"', 2),
+            ('<textarea', 1),
             ('type="email"', 1),
             ('type="submit"', 1)
         )
@@ -29,40 +29,40 @@ class SubscribeGet(TestCase):
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
 
-class SubscribePostValid(TestCase):
+class ContactPostValid(TestCase):
     def setUp(self):
-        data = dict(name="Guilherme", cpf='12345678901',
-                    email='guideb23@gmail.com', phone='53-12345-6789')
-        self.resp = self.client.post('/inscricao/', data)
+        data = dict(name="Guilherme", email='guideb23@gmail.com',
+                    phone='53-12345-6789', message='boa tarde')
+        self.resp = self.client.post('/contato/', data)
 
     def test_post(self):
-        self.assertRedirects(self.resp, '/inscricao/1/')
+        self.assertRedirects(self.resp, '/contato/')
 
-    def test_send_subscription_email(self):
+    def test_send_contact_email(self):
         self.assertEqual(1, len(mail.outbox))
 
-    def test_save_subscription(self):
-        self.assertTrue(Subscription.objects.exists())
 
-
-class SubscribePostInvalid(TestCase):
+class ContactPostInvalid(TestCase):
     def setUp(self):
-        self.resp = self.client.post('/inscricao/', {})
+        self.resp = self.client.post('/contato/')
 
     def test_post(self):
         self.assertEqual(200, self.resp.status_code)
 
     def test_template(self):
         self.assertTemplateUsed(
-            self.resp, 'subscriptions/subscription_form.html')
+            self.resp, 'contact/contact_form.html')
 
     def test_has_form(self):
         form = self.resp.context['form']
-        self.assertIsInstance(form, SubscriptionForm)
+        self.assertIsInstance(form, ContactForm)
 
     def test_form_has_error(self):
         form = self.resp.context['form']
         self.assertTrue(form.errors)
 
-    def test_dont_save_subscription(self):
-        self.assertFalse(Subscription.objects.exists())
+
+
+
+    
+
