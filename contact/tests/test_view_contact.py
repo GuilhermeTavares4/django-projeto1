@@ -41,7 +41,6 @@ class ContactPostValid(TestCase):
     def test_send_contact_email(self):
         self.assertEqual(1, len(mail.outbox))
 
-
 class ContactPostInvalid(TestCase):
     def setUp(self):
         self.resp = self.client.post('/contato/')

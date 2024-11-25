@@ -2,7 +2,7 @@ from django.shortcuts import render
 from contact.forms import ContactForm
 from django.conf import settings
 from django.core import mail
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.contrib import messages
 
