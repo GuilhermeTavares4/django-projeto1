@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core import mail
+from django.shortcuts import resolve_url as r
 
 # Create your tests here.
 
@@ -9,7 +10,7 @@ class SubscribePostValid(TestCase):
 
     def setUp(self):
         data = dict(name='Guilherme', cpf='12345678901', email='guideb23@gmail.com', phone='53 12345-6789')
-        self.client.post('/inscricao/', data)
+        self.client.post(r('subscriptions:new'), data)
         self.email = mail.outbox[0]
     
     
